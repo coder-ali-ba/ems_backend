@@ -160,3 +160,53 @@ export const getPendingTask = async(req , res) => {
         })
     }
 }
+
+export const getCompletedTask = async(req , res) => {
+    try {
+        const userToken = req.headers.authorization.split(" ")[1];
+        if(!userToken){
+            return res.status(401).json({
+                message : "Unauthorized"
+            })
+        }
+        const verifytoken = jwt.verify(userToken , process.env.PrivateKey);
+        const getUser = await employModel.findById(verifytoken.id)
+
+        const getTask = await tasksModel.find({
+            assignTo : getUser.name,
+            status : "Completed"
+        })
+        res.status(201).json({
+            data : getTask,
+        })
+    } catch (error) {
+        res.status(501).json({
+            message : "Something went wrong"
+        })
+    }
+}
+
+export const getFailedTask = async(req , res) => {
+    try {
+        const userToken = req.headers.authorization.split(" ")[1];
+        if(!userToken){
+            return res.status(401).json({
+                message : "Unauthorized"
+            })
+        }
+        const verifytoken = jwt.verify(userToken , process.env.PrivateKey);
+        const getUser = await employModel.findById(verifytoken.id)
+
+        const getTask = await tasksModel.find({
+            assignTo : getUser.name,
+            status : "Failed"
+        })
+        res.status(201).json({
+            data : getTask,
+        })
+    } catch (error) {
+        res.status(501).json({
+            message : "Something went wrong"
+        })
+    }
+}
